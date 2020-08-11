@@ -6,7 +6,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class Oscillator : MonoBehaviour
 {
-    [SerializeField] Vector3 movementVector;
+    [SerializeField] Vector3 movementVector = new Vector3(8, -6, 0);
     [SerializeField] float period;
     [SerializeField, Range(0,1)] float movementFactor; //0 is not moved, 1 is fully moved
     private Vector3 startingPos;
@@ -15,7 +15,6 @@ public class Oscillator : MonoBehaviour
     void Start()
     {
         startingPos = transform.position;
-        movementVector = new Vector3(8, -6, 0);
         period = 4f;
     }
 
