@@ -22,6 +22,8 @@ public class Rocket : MonoBehaviour
     enum State { Alive, Dying, Transcending};
     State state = State.Alive;
 
+    private bool godMode = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -38,25 +40,39 @@ public class Rocket : MonoBehaviour
             RespondToThurstInput();
             RespondToRotateInput();
         }
+
+        if (Debug.isDebugBuild)
+        {
+            CheckForDevKeys();
+        }
+    }
+
+    private void CheckForDevKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextScene();
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            godMode = !godMode;
+        }
     }
 
     private void RespondToRotateInput()
     {
-        //override physics rotation
-        rigidBody.freezeRotation = true;
         float angVelocity = Time.deltaTime * rcsThrust;
 
         if (Input.GetKey(KeyCode.A))
         {
+            rigidBody.angularVelocity = Vector3.zero;
             transform.Rotate(Vector3.forward * angVelocity);
         }
         else if (Input.GetKey(KeyCode.D))
         {
+            rigidBody.angularVelocity = Vector3.zero;
             transform.Rotate(-Vector3.forward * angVelocity);
         }
-
-        //allow physics to rotate again
-        rigidBody.freezeRotation = false;
     }
 
     private void RespondToThurstInput()
@@ -93,7 +109,7 @@ public class Rocket : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(state != State.Alive) //ignore collisions when dying or transcending
+        if(state != State.Alive || godMode) //ignore collisions when dying or transcending
         {
             return;
         }
@@ -137,6 +153,8 @@ public class Rocket : MonoBehaviour
 
     private void LoadNextScene()
     {
-        SceneManager.LoadScene(1);
+        int index = SceneManager.GetActiveScene().buildIndex;
+        int numScenes = SceneManager.sceneCountInBuildSettings;
+        SceneManager.LoadScene((index + 1) % numScenes);
     }
 }
